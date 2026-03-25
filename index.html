@@ -1,1001 +1,1797 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Daily Tracker ✨</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daily Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
   <style>
     :root {
       --bg: #0a0a12;
       --surface: #12121e;
       --surface2: #1a1a2e;
-      --border: rgba(255,255,255,0.07);
+      --border: rgba(255, 255, 255, 0.07);
       --text: #e8e8f0;
       --muted: #7070a0;
       --accent: #7c5cfc;
-      --work:    #7c5cfc;
-      --health:  #2dd4a7;
-      --learning:#f59e0b;
-      --personal:#f472b6;
-      --social:  #38bdf8;
+      --work: #7c5cfc;
+      --health: #2dd4a7;
+      --learning: #f59e0b;
+      --personal: #f472b6;
+      --social: #38bdf8;
       --radius: 16px;
       --radius-sm: 10px;
     }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; font-size: 15px; }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+    }
 
     /* ── Scrollbar ── */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: var(--surface); }
-    ::-webkit-scrollbar-thumb { background: #2a2a45; border-radius: 99px; }
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--surface);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #2a2a45;
+      border-radius: 99px;
+    }
 
     /* ── Layout ── */
-    .app { display: flex; height: 100vh; overflow: hidden; }
+    .app {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
 
     /* ── Sidebar ── */
     .sidebar {
-      width: 220px; flex-shrink: 0;
+      width: 220px;
+      flex-shrink: 0;
       background: var(--surface);
       border-right: 1px solid var(--border);
-      display: flex; flex-direction: column;
+      display: flex;
+      flex-direction: column;
       padding: 24px 16px;
       gap: 8px;
     }
-    .logo { font-size: 18px; font-weight: 800; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-    .logo span { background: linear-gradient(135deg,#7c5cfc,#38bdf8);  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-    .nav-btn {
-      background: none; border: none; color: var(--muted);
-      font-size: 14px; font-weight: 500; cursor: pointer;
-      padding: 10px 14px; border-radius: var(--radius-sm);
-      text-align: left; transition: all .2s; display: flex; align-items: center; gap: 10px;
+
+    .logo {
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    .nav-btn:hover { background: var(--surface2); color: var(--text); }
-    .nav-btn.active { background: rgba(124,92,252,.15); color: #a88fff; }
-    .sidebar-footer { margin-top: auto; font-size: 12px; color: var(--muted); text-align: center; line-height: 1.6; }
+
+    .logo span {
+      background: linear-gradient(135deg, #7c5cfc, #38bdf8);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      text-align: left;
+      transition: all .2s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-btn:hover {
+      background: var(--surface2);
+      color: var(--text);
+    }
+
+    .nav-btn.active {
+      background: rgba(124, 92, 252, .15);
+      color: #a88fff;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.6;
+    }
 
     /* ── Sidebar Clock ── */
     .sidebar-clock {
-      background: var(--surface2); border: 1px solid var(--border);
-      border-radius: var(--radius-sm); padding: 12px 14px;
-      text-align: center; margin-bottom: 8px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      text-align: center;
+      margin-bottom: 8px;
     }
+
     .clock-time {
-      font-size: 22px; font-weight: 800; letter-spacing: 2px;
-      background: linear-gradient(135deg,#7c5cfc,#38bdf8);
-      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      background: linear-gradient(135deg, #7c5cfc, #38bdf8);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
       font-variant-numeric: tabular-nums;
     }
-    .clock-date { font-size: 11px; color: var(--muted); margin-top: 3px; font-weight: 500; }
+
+    .clock-date {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 3px;
+      font-weight: 500;
+    }
 
     /* ── Celebrate Popup ── */
     .celebrate-overlay {
-      position: fixed; inset: 0; z-index: 2000;
-      display: flex; align-items: center; justify-content: center;
-      background: rgba(0,0,0,.6); backdrop-filter: blur(6px);
-      opacity: 0; pointer-events: none; transition: opacity .4s;
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, .6);
+      backdrop-filter: blur(6px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .4s;
     }
-    .celebrate-overlay.show { opacity: 1; pointer-events: all; }
+
+    .celebrate-overlay.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
     .celebrate-box {
       background: var(--surface);
-      border: 1px solid rgba(124,92,252,.4);
-      border-radius: 24px; padding: 44px 48px;
-      text-align: center; max-width: 380px; width: 90%;
-      box-shadow: 0 0 80px rgba(124,92,252,.35), 0 0 30px rgba(56,189,248,.2);
-      transform: scale(.85); transition: transform .4s cubic-bezier(.34,1.56,.64,1);
-      position: relative; overflow: hidden;
+      border: 1px solid rgba(124, 92, 252, .4);
+      border-radius: 24px;
+      padding: 44px 48px;
+      text-align: center;
+      max-width: 380px;
+      width: 90%;
+      box-shadow: 0 0 80px rgba(124, 92, 252, .35), 0 0 30px rgba(56, 189, 248, .2);
+      transform: scale(.85);
+      transition: transform .4s cubic-bezier(.34, 1.56, .64, 1);
+      position: relative;
+      overflow: hidden;
     }
-    .celebrate-overlay.show .celebrate-box { transform: scale(1); }
-    .celebrate-emoji { font-size: 72px; margin-bottom: 12px; display: block; animation: bounce 1s infinite alternate; }
-    @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-12px); } }
+
+    .celebrate-overlay.show .celebrate-box {
+      transform: scale(1);
+    }
+
+    .celebrate-emoji {
+      font-size: 72px;
+      margin-bottom: 12px;
+      display: block;
+      animation: bounce 1s infinite alternate;
+    }
+
+    @keyframes bounce {
+      from {
+        transform: translateY(0);
+      }
+
+      to {
+        transform: translateY(-12px);
+      }
+    }
+
     .celebrate-title {
-      font-size: 26px; font-weight: 800; margin-bottom: 8px;
-      background: linear-gradient(135deg,#f59e0b,#f472b6,#7c5cfc);
-      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+      font-size: 26px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #f59e0b, #f472b6, #7c5cfc);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
-    .celebrate-sub { font-size: 15px; color: var(--muted); margin-bottom: 28px; line-height: 1.5; }
+
+    .celebrate-sub {
+      font-size: 15px;
+      color: var(--muted);
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
+
     .celebrate-close {
-      background: linear-gradient(135deg,#7c5cfc,#38bdf8);
-      border: none; color: #fff; font-weight: 700;
-      padding: 12px 32px; border-radius: 99px; cursor: pointer;
-      font-size: 15px; transition: opacity .2s;
+      background: linear-gradient(135deg, #7c5cfc, #38bdf8);
+      border: none;
+      color: #fff;
+      font-weight: 700;
+      padding: 12px 32px;
+      border-radius: 99px;
+      cursor: pointer;
+      font-size: 15px;
+      transition: opacity .2s;
     }
-    .celebrate-close:hover { opacity: .85; }
+
+    .celebrate-close:hover {
+      opacity: .85;
+    }
+
     /* Confetti particles */
-    .confetti-wrap { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+    .confetti-wrap {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
     .confetti-piece {
-      position: absolute; width: 10px; height: 10px; border-radius: 2px;
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
       animation: confetti-fall linear forwards;
       opacity: 0;
     }
+
     @keyframes confetti-fall {
-      0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
-      100% { transform: translateY(500px) rotate(720deg); opacity: 0; }
+      0% {
+        transform: translateY(-20px) rotate(0deg);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(500px) rotate(720deg);
+        opacity: 0;
+      }
     }
 
     /* ── Main ── */
-    .main { flex: 1; overflow-y: auto; padding: 32px; }
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 32px;
+    }
 
     /* ── Views ── */
-    .view { display: none; }
-    .view.active { display: block; }
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: block;
+    }
 
     /* ── Page Header ── */
-    .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
-    .page-title { font-size: 24px; font-weight: 800; }
-    .page-sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .page-title {
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .page-sub {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
 
     /* ── Day Navigator ── */
-    .day-nav { display: flex; align-items: center; gap: 12px; }
+    .day-nav {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
     .nav-arrow {
-      background: var(--surface2); border: 1px solid var(--border);
-      color: var(--text); width: 36px; height: 36px; border-radius: 8px;
-      cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       transition: all .2s;
     }
-    .nav-arrow:hover { background: rgba(124,92,252,.2); border-color: #7c5cfc; }
-    .nav-arrow:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .nav-arrow:hover {
+      background: rgba(124, 92, 252, .2);
+      border-color: #7c5cfc;
+    }
+
+    .nav-arrow:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
     .current-date-badge {
-      background: var(--surface2); border: 1px solid var(--border);
-      padding: 6px 16px; border-radius: 99px; font-size: 14px; font-weight: 600;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 6px 16px;
+      border-radius: 99px;
+      font-size: 14px;
+      font-weight: 600;
     }
 
     /* ── Day View Grid ── */
-    .day-grid { display: grid; grid-template-columns: 1fr 280px; gap: 24px; }
-    @media(max-width:900px){ .day-grid { grid-template-columns: 1fr; } }
+    .day-grid {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 24px;
+    }
+
+    @media(max-width:900px) {
+      .day-grid {
+        grid-template-columns: 1fr;
+      }
+    }
 
     /* ── Card ── */
     .card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
     }
-    .card-title { font-size: 14px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 16px; }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 16px;
+    }
 
     /* ── Add Task ── */
-    .add-task-form { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .add-task-form {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
     .task-input {
-      flex: 1; min-width: 180px;
-      background: var(--surface2); border: 1px solid var(--border);
-      color: var(--text); border-radius: var(--radius-sm);
-      padding: 10px 14px; font-size: 14px; font-family: inherit;
-      outline: none; transition: border-color .2s;
+      flex: 1;
+      min-width: 180px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color .2s;
     }
-    .task-input:focus { border-color: #7c5cfc; }
+
+    .task-input:focus {
+      border-color: #7c5cfc;
+    }
+
     .cat-select {
-      background: var(--surface2); border: 1px solid var(--border);
-      color: var(--text); border-radius: var(--radius-sm);
-      padding: 10px 12px; font-size: 14px; font-family: inherit;
-      outline: none; cursor: pointer; transition: border-color .2s;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      cursor: pointer;
+      transition: border-color .2s;
     }
-    .cat-select:focus { border-color: #7c5cfc; }
+
+    .cat-select:focus {
+      border-color: #7c5cfc;
+    }
+
     .add-btn {
-      background: linear-gradient(135deg,#7c5cfc,#38bdf8);
-      border: none; color: #fff; font-weight: 700;
-      padding: 10px 18px; border-radius: var(--radius-sm);
-      cursor: pointer; font-size: 14px; transition: opacity .2s; white-space: nowrap;
+      background: linear-gradient(135deg, #7c5cfc, #38bdf8);
+      border: none;
+      color: #fff;
+      font-weight: 700;
+      padding: 10px 18px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 14px;
+      transition: opacity .2s;
+      white-space: nowrap;
     }
-    .add-btn:hover { opacity: .85; }
+
+    .add-btn:hover {
+      opacity: .85;
+    }
 
     /* ── Task List ── */
-    .tasks-list { display: flex; flex-direction: column; gap: 10px; }
+    .tasks-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
     .task-item {
-      display: flex; align-items: center; gap: 12px;
-      background: var(--surface2); border: 1px solid var(--border);
-      border-radius: var(--radius-sm); padding: 12px 14px;
-      transition: all .2s; cursor: pointer;
-      position: relative; overflow: hidden;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      transition: all .2s;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
     }
+
     .task-item::before {
-      content: ''; position: absolute; left: 0; top: 0; bottom: 0;
-      width: 3px; border-radius: 3px 0 0 3px;
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      border-radius: 3px 0 0 3px;
     }
-    .task-item[data-cat="Work"]::before     { background: var(--work); }
-    .task-item[data-cat="Health"]::before   { background: var(--health); }
-    .task-item[data-cat="Learning"]::before { background: var(--learning); }
-    .task-item[data-cat="Personal"]::before { background: var(--personal); }
-    .task-item[data-cat="Social"]::before   { background: var(--social); }
-    .task-item.done { opacity: .55; }
-    .task-item.done .task-label { text-decoration: line-through; }
+
+    .task-item[data-cat="Work"]::before {
+      background: var(--work);
+    }
+
+    .task-item[data-cat="Health"]::before {
+      background: var(--health);
+    }
+
+    .task-item[data-cat="Learning"]::before {
+      background: var(--learning);
+    }
+
+    .task-item[data-cat="Personal"]::before {
+      background: var(--personal);
+    }
+
+    .task-item[data-cat="Social"]::before {
+      background: var(--social);
+    }
+
+    .task-item.done {
+      opacity: .55;
+    }
+
+    .task-item.done .task-label {
+      text-decoration: line-through;
+    }
+
     .task-check {
-      width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--border);
-      flex-shrink: 0; display: flex; align-items: center; justify-content: center;
-      transition: all .2s; font-size: 12px;
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      border: 2px solid var(--border);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .2s;
+      font-size: 12px;
     }
-    .task-item.done .task-check { background: #2dd4a7; border-color: #2dd4a7; color: #fff; }
-    .task-label { flex: 1; font-size: 14px; font-weight: 500; }
+
+    .task-item.done .task-check {
+      background: #2dd4a7;
+      border-color: #2dd4a7;
+      color: #fff;
+    }
+
+    .task-label {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
     .task-cat-tag {
-      font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 99px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 99px;
       opacity: .75;
     }
-    .tag-Work     { background: rgba(124,92,252,.2); color: #a88fff; }
-    .tag-Health   { background: rgba(45,212,167,.2); color: #2dd4a7; }
-    .tag-Learning { background: rgba(245,158,11,.2); color: #f59e0b; }
-    .tag-Personal { background: rgba(244,114,182,.2); color: #f472b6; }
-    .tag-Social   { background: rgba(56,189,248,.2); color: #38bdf8; }
-    .task-del-btn {
-      background: none; border: none; color: var(--muted); cursor: pointer;
-      font-size: 16px; padding: 2px 6px; border-radius: 4px; transition: color .2s;
+
+    .tag-Work {
+      background: rgba(124, 92, 252, .2);
+      color: #a88fff;
     }
-    .task-del-btn:hover { color: #fc5c5c; }
-    .empty-state { color: var(--muted); text-align: center; padding: 40px 20px; font-size: 14px; }
-    .empty-state .emoji { font-size: 40px; margin-bottom: 10px; }
+
+    .tag-Health {
+      background: rgba(45, 212, 167, .2);
+      color: #2dd4a7;
+    }
+
+    .tag-Learning {
+      background: rgba(245, 158, 11, .2);
+      color: #f59e0b;
+    }
+
+    .tag-Personal {
+      background: rgba(244, 114, 182, .2);
+      color: #f472b6;
+    }
+
+    .tag-Social {
+      background: rgba(56, 189, 248, .2);
+      color: #38bdf8;
+    }
+
+    .task-del-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 16px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: color .2s;
+    }
+
+    .task-del-btn:hover {
+      color: #fc5c5c;
+    }
+
+    .empty-state {
+      color: var(--muted);
+      text-align: center;
+      padding: 40px 20px;
+      font-size: 14px;
+    }
+
+    .empty-state .emoji {
+      font-size: 40px;
+      margin-bottom: 10px;
+    }
 
     /* ── Pie Chart ── */
-    .pie-wrap { display: flex; flex-direction: column; gap: 20px; }
-    .pie-ring-wrap { position: relative; width: 180px; height: 180px; margin: 0 auto; }
-    #pieCanvas { width: 100%; height: 100%; }
-    .pie-center-text {
-      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
-      text-align: center; pointer-events: none;
+    .pie-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
     }
-    .pie-pct { font-size: 28px; font-weight: 800; }
-    .pie-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
-    .pie-legend { display: flex; flex-direction: column; gap: 8px; }
-    .legend-item { display: flex; align-items: center; gap: 10px; font-size: 13px; }
-    .legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
-    .legend-label { flex: 1; color: var(--muted); }
-    .legend-count { font-weight: 600; }
-    .progress-stats { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); }
-    .progress-bar-wrap { margin-top: 6px; background: var(--surface2); border-radius: 99px; height: 6px; overflow: hidden; }
-    .progress-bar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg,#7c5cfc,#38bdf8); transition: width .5s; }
+
+    .pie-ring-wrap {
+      position: relative;
+      width: 180px;
+      height: 180px;
+      margin: 0 auto;
+    }
+
+    #pieCanvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    .pie-center-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .pie-pct {
+      font-size: 28px;
+      font-weight: 800;
+    }
+
+    .pie-label {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .pie-legend {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    .legend-label {
+      flex: 1;
+      color: var(--muted);
+    }
+
+    .legend-count {
+      font-weight: 600;
+    }
+
+    .progress-stats {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .progress-bar-wrap {
+      margin-top: 6px;
+      background: var(--surface2);
+      border-radius: 99px;
+      height: 6px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, #7c5cfc, #38bdf8);
+      transition: width .5s;
+    }
 
     /* ── Week View ── */
-    .week-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 12px; margin-bottom: 32px; }
-    @media(max-width:900px){ .week-grid { grid-template-columns: repeat(4,1fr); } }
-    @media(max-width:550px){ .week-grid { grid-template-columns: repeat(2,1fr); } }
-    .week-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 16px 12px; cursor: pointer;
-      transition: all .2s; text-align: center;
+    .week-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 12px;
+      margin-bottom: 32px;
     }
-    .week-card:hover { border-color: #7c5cfc; background: rgba(124,92,252,.08); }
-    .week-card.today-card { border-color: #7c5cfc; box-shadow: 0 0 0 2px rgba(124,92,252,.25); }
-    .week-day-name { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; margin-bottom: 8px; letter-spacing: .05em; }
-    .week-mini-pie { margin: 0 auto 10px; }
-    .week-pct { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
-    .week-task-count { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
-    .week-dots { display: flex; gap: 4px; justify-content: center; flex-wrap: wrap; }
-    .week-dot { width: 7px; height: 7px; border-radius: 2px; opacity: .85; }
+
+    @media(max-width:900px) {
+      .week-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    @media(max-width:550px) {
+      .week-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .week-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 12px;
+      cursor: pointer;
+      transition: all .2s;
+      text-align: center;
+    }
+
+    .week-card:hover {
+      border-color: #7c5cfc;
+      background: rgba(124, 92, 252, .08);
+    }
+
+    .week-card.today-card {
+      border-color: #7c5cfc;
+      box-shadow: 0 0 0 2px rgba(124, 92, 252, .25);
+    }
+
+    .week-day-name {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      letter-spacing: .05em;
+    }
+
+    .week-mini-pie {
+      margin: 0 auto 10px;
+    }
+
+    .week-pct {
+      font-size: 16px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .week-task-count {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .week-dots {
+      display: flex;
+      gap: 4px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .week-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 2px;
+      opacity: .85;
+    }
 
     /* Past Days ── */
-    .section-title { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
-    .past-list { display: flex; flex-direction: column; gap: 10px; }
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .past-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
     .past-item {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius-sm); padding: 14px 18px;
-      display: flex; align-items: center; gap: 16px; cursor: pointer;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      cursor: pointer;
       transition: all .2s;
     }
-    .past-item:hover { border-color: #7c5cfc; background: rgba(124,92,252,.06); }
-    .past-date { font-weight: 700; font-size: 15px; min-width: 130px; }
-    .past-bar-wrap { flex: 1; background: var(--surface2); border-radius: 99px; height: 5px; overflow: hidden; }
-    .past-bar { height: 100%; border-radius: 99px; background: linear-gradient(90deg,#7c5cfc,#38bdf8); }
-    .past-pct { font-size: 14px; font-weight: 700; min-width: 42px; text-align: right; }
-    .past-count { font-size: 12px; color: var(--muted); min-width: 70px; text-align: right; }
+
+    .past-item:hover {
+      border-color: #7c5cfc;
+      background: rgba(124, 92, 252, .06);
+    }
+
+    .past-date {
+      font-weight: 700;
+      font-size: 15px;
+      min-width: 130px;
+    }
+
+    .past-bar-wrap {
+      flex: 1;
+      background: var(--surface2);
+      border-radius: 99px;
+      height: 5px;
+      overflow: hidden;
+    }
+
+    .past-bar {
+      height: 100%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, #7c5cfc, #38bdf8);
+    }
+
+    .past-pct {
+      font-size: 14px;
+      font-weight: 700;
+      min-width: 42px;
+      text-align: right;
+    }
+
+    .past-count {
+      font-size: 12px;
+      color: var(--muted);
+      min-width: 70px;
+      text-align: right;
+    }
 
     /* ── Recurring View ── */
-    .recurring-section { margin-bottom: 28px; }
-    .recurring-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-    .recurring-list { display: flex; flex-direction: column; gap: 10px; }
+    .recurring-section {
+      margin-bottom: 28px;
+    }
+
+    .recurring-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .recurring-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
     .rec-item {
-      display: flex; align-items: center; gap: 12px;
-      background: var(--surface2); border: 1px solid var(--border);
-      border-radius: var(--radius-sm); padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
       transition: all .2s;
-      position: relative; overflow: hidden;
+      position: relative;
+      overflow: hidden;
     }
+
     .rec-item::before {
-      content: ''; position: absolute; left: 0; top: 0; bottom: 0;
-      width: 3px; border-radius: 3px 0 0 3px;
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      border-radius: 3px 0 0 3px;
     }
-    .rec-item[data-cat="Work"]::before     { background: var(--work); }
-    .rec-item[data-cat="Health"]::before   { background: var(--health); }
-    .rec-item[data-cat="Learning"]::before { background: var(--learning); }
-    .rec-item[data-cat="Personal"]::before { background: var(--personal); }
-    .rec-item[data-cat="Social"]::before   { background: var(--social); }
-    .rec-item.disabled { opacity: .45; }
-    .rec-label { flex: 1; font-size: 14px; font-weight: 500; }
+
+    .rec-item[data-cat="Work"]::before {
+      background: var(--work);
+    }
+
+    .rec-item[data-cat="Health"]::before {
+      background: var(--health);
+    }
+
+    .rec-item[data-cat="Learning"]::before {
+      background: var(--learning);
+    }
+
+    .rec-item[data-cat="Personal"]::before {
+      background: var(--personal);
+    }
+
+    .rec-item[data-cat="Social"]::before {
+      background: var(--social);
+    }
+
+    .rec-item.disabled {
+      opacity: .45;
+    }
+
+    .rec-label {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
     .rec-cat-tag {
-      font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 99px; opacity: .75;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 99px;
+      opacity: .75;
     }
+
     /* toggle switch */
-    .toggle-wrap { display: flex; align-items: center; gap: 6px; }
+    .toggle-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
     .toggle {
-      position: relative; width: 36px; height: 20px; flex-shrink: 0;
+      position: relative;
+      width: 36px;
+      height: 20px;
+      flex-shrink: 0;
     }
-    .toggle input { opacity: 0; width: 0; height: 0; }
+
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
     .slider {
-      position: absolute; cursor: pointer; inset: 0;
-      background: #2a2a45; border-radius: 99px; transition: .2s;
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: #2a2a45;
+      border-radius: 99px;
+      transition: .2s;
     }
+
     .slider::before {
-      content: ''; position: absolute;
-      width: 14px; height: 14px; left: 3px; bottom: 3px;
-      background: #fff; border-radius: 50%; transition: .2s;
+      content: '';
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      left: 3px;
+      bottom: 3px;
+      background: #fff;
+      border-radius: 50%;
+      transition: .2s;
     }
-    input:checked + .slider { background: #7c5cfc; }
-    input:checked + .slider::before { transform: translateX(16px); }
+
+    input:checked+.slider {
+      background: #7c5cfc;
+    }
+
+    input:checked+.slider::before {
+      transform: translateX(16px);
+    }
+
     .rec-del-btn {
-      background: none; border: none; color: var(--muted); cursor: pointer;
-      font-size: 16px; padding: 2px 6px; border-radius: 4px; transition: color .2s;
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 16px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: color .2s;
     }
-    .rec-del-btn:hover { color: #fc5c5c; }
+
+    .rec-del-btn:hover {
+      color: #fc5c5c;
+    }
+
     .rec-info-box {
-      background: rgba(124,92,252,.08); border: 1px solid rgba(124,92,252,.2);
-      border-radius: var(--radius-sm); padding: 12px 16px;
-      font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 20px;
+      background: rgba(124, 92, 252, .08);
+      border: 1px solid rgba(124, 92, 252, .2);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 20px;
     }
-    .rec-info-box strong { color: #a88fff; }
+
+    .rec-info-box strong {
+      color: #a88fff;
+    }
+
+    /* ── Time Fields ── */
+    .time-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
+    .time-label-sm { font-size: 12px; color: var(--muted); white-space: nowrap; }
+    .time-input {
+      background: var(--surface2); border: 1px solid var(--border);
+      color: var(--text); border-radius: var(--radius-sm);
+      padding: 8px 10px; font-size: 13px; font-family: inherit;
+      outline: none; transition: border-color .2s; width: 116px;
+      color-scheme: dark;
+    }
+    .time-input:focus { border-color: #7c5cfc; }
+    .task-duration-badge {
+      font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 99px;
+      background: rgba(255,255,255,.05); color: var(--muted);
+      cursor: pointer; transition: all .2s; white-space: nowrap; flex-shrink: 0;
+      border: 1px solid transparent;
+    }
+    .task-duration-badge:hover { border-color: #7c5cfc; color: #a88fff; background: rgba(124,92,252,.12); }
+    .task-time-editor {
+      display: none; gap: 6px; align-items: center; flex-wrap: wrap;
+      background: var(--surface); border: 1px solid #7c5cfc;
+      border-radius: var(--radius-sm); padding: 7px 10px; margin-top: 8px;
+    }
+    .task-time-editor.open { display: flex; }
+    .task-time-editor .time-input { width: 100px; padding: 5px 8px; font-size: 12px; }
+    .time-save-btn {
+      background: #7c5cfc; border: none; color: #fff; font-weight: 700;
+      padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;
+    }
+    .time-save-btn:hover { opacity: .85; }
+    /* Total Time Card */
+    .total-time-row { display: flex; align-items: center; justify-content: space-between; }
+    .total-time-value { font-size: 22px; font-weight: 800;
+      background: linear-gradient(135deg,#7c5cfc,#38bdf8);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .total-time-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
 
     /* Toast */
     .toast {
-      position: fixed; bottom: 28px; right: 28px; z-index: 999;
-      background: var(--surface2); border: 1px solid var(--border);
-      border-radius: var(--radius-sm); padding: 12px 20px;
-      font-size: 14px; font-weight: 500; opacity: 0; transform: translateY(10px);
-      transition: all .3s; pointer-events: none;
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 999;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all .3s;
+      pointer-events: none;
     }
-    .toast.show { opacity: 1; transform: translateY(0); }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
   </style>
 </head>
+
 <body>
 
-<div class="app">
-  <!-- ── Sidebar ── -->
-  <aside class="sidebar">
-    <div class="logo">📊 <span>DayTrack</span></div>
+  <div class="app">
+    <!-- ── Sidebar ── -->
+    <aside class="sidebar">
+      <div class="logo">📊 <span>DayTrack</span></div>
 
-    <!-- Live Clock -->
-    <div class="sidebar-clock">
-      <div class="clock-time" id="clockTime">--:--:--</div>
-      <div class="clock-date" id="clockDate"></div>
-    </div>
-
-    <button class="nav-btn active" id="nav-day" onclick="showView('day')">📅 Day View</button>
-    <button class="nav-btn" id="nav-week" onclick="showView('week')">🗓 Week View</button>
-    <button class="nav-btn" id="nav-recurring" onclick="showView('recurring')">🔁 Recurring</button>
-    <div class="sidebar-footer">
-      All data saved locally<br>in your browser 💾
-    </div>
-  </aside>
-
-  <!-- ── Main Content ── -->
-  <main class="main">
-
-    <!-- ══ DAY VIEW ══ -->
-    <div class="view active" id="view-day">
-      <div class="page-header">
-        <div>
-          <div class="page-title" id="dayViewTitle">Today</div>
-          <div class="page-sub" id="dayViewSub"></div>
-        </div>
-        <div class="day-nav">
-          <button class="nav-arrow" id="prevDay" onclick="changeDay(-1)">‹</button>
-          <span class="current-date-badge" id="dayNavLabel"></span>
-          <button class="nav-arrow" id="nextDay" onclick="changeDay(1)">›</button>
-        </div>
+      <!-- Live Clock -->
+      <div class="sidebar-clock">
+        <div class="clock-time" id="clockTime">--:--:--</div>
+        <div class="clock-date" id="clockDate"></div>
       </div>
 
-      <div class="day-grid">
-        <!-- Tasks Panel -->
-        <div>
-          <div class="card" style="margin-bottom:20px;">
-            <div class="card-title">Add Task</div>
-            <div class="add-task-form">
-              <input class="task-input" id="taskInput" placeholder="What do you want to do?" maxlength="120" onkeydown="if(event.key==='Enter') addTask()"/>
-              <select class="cat-select" id="catSelect">
-                <option value="Work">💼 Work</option>
-                <option value="Health">🏃 Health</option>
-                <option value="Learning">📚 Learning</option>
-                <option value="Personal">💛 Personal</option>
-                <option value="Social">👥 Social</option>
-              </select>
-              <button class="add-btn" onclick="addTask()">+ Add</button>
-            </div>
+      <button class="nav-btn active" id="nav-day" onclick="showView('day')">📅 Day View</button>
+      <button class="nav-btn" id="nav-week" onclick="showView('week')">🗓 Week View</button>
+      <button class="nav-btn" id="nav-recurring" onclick="showView('recurring')">🔁 Recurring</button>
+      <div class="sidebar-footer">
+        All data saved locally<br>in your browser 💾
+      </div>
+    </aside>
+
+    <!-- ── Main Content ── -->
+    <main class="main">
+
+      <!-- ══ DAY VIEW ══ -->
+      <div class="view active" id="view-day">
+        <div class="page-header">
+          <div>
+            <div class="page-title" id="dayViewTitle">Today</div>
+            <div class="page-sub" id="dayViewSub"></div>
           </div>
-          <div class="card">
-            <div class="card-title">Tasks</div>
-            <div class="tasks-list" id="tasksList"></div>
+          <div class="day-nav">
+            <button class="nav-arrow" id="prevDay" onclick="changeDay(-1)">‹</button>
+            <span class="current-date-badge" id="dayNavLabel"></span>
+            <button class="nav-arrow" id="nextDay" onclick="changeDay(1)">›</button>
           </div>
         </div>
 
-        <!-- Stats Panel -->
-        <div style="display:flex;flex-direction:column;gap:20px;">
-          <div class="card">
-            <div class="card-title">Progress</div>
-            <div class="pie-wrap">
-              <div class="pie-ring-wrap">
-                <canvas id="pieCanvas" width="180" height="180"></canvas>
-                <div class="pie-center-text">
-                  <div class="pie-pct" id="piePct">0%</div>
-                  <div class="pie-label">done</div>
+        <div class="day-grid">
+          <!-- Tasks Panel -->
+          <div>
+            <div class="card" style="margin-bottom:20px;">
+              <div class="card-title">Add Task</div>
+              <div class="add-task-form">
+                <input class="task-input" id="taskInput" placeholder="What do you want to do?" maxlength="120"
+                  onkeydown="if(event.key==='Enter') addTask()" />
+                <select class="cat-select" id="catSelect">
+                  <option value="Work">💼 Work</option>
+                  <option value="Health">🏃 Health</option>
+                  <option value="Learning">📚 Learning</option>
+                  <option value="Personal">💛 Personal</option>
+                  <option value="Social">👥 Social</option>
+                </select>
+                <button class="add-btn" onclick="addTask()">+ Add</button>
+              </div>
+              <div class="time-row">
+                <span class="time-label-sm">⏰ From</span>
+                <input class="time-input" id="taskStartTime" type="time"/>
+                <span class="time-label-sm">To</span>
+                <input class="time-input" id="taskEndTime" type="time"/>
+                <span class="time-label-sm" style="opacity:.5">(optional)</span>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">Tasks</div>
+              <div class="tasks-list" id="tasksList"></div>
+            </div>
+          </div>
+
+          <!-- Stats Panel -->
+          <div style="display:flex;flex-direction:column;gap:20px;">
+            <div class="card">
+              <div class="card-title">Progress</div>
+              <div class="pie-wrap">
+                <div class="pie-ring-wrap">
+                  <canvas id="pieCanvas" width="180" height="180"></canvas>
+                  <div class="pie-center-text">
+                    <div class="pie-pct" id="piePct">0%</div>
+                    <div class="pie-label">done</div>
+                  </div>
+                </div>
+                <div class="progress-stats">
+                  <span id="doneCnt">0 done</span>
+                  <span id="totalCnt">0 total</span>
+                </div>
+                <div class="progress-bar-wrap">
+                  <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
                 </div>
               </div>
-              <div class="progress-stats">
-                <span id="doneCnt">0 done</span>
-                <span id="totalCnt">0 total</span>
-              </div>
-              <div class="progress-bar-wrap">
-                <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+            </div>
+            <div class="card">
+              <div class="card-title">By Category</div>
+              <div class="pie-legend" id="pieLegend"></div>
+            </div>
+            <div class="card">
+              <div class="total-time-row">
+                <div>
+                  <div class="card-title" style="margin-bottom:6px">⏱ Total Time Today</div>
+                  <div class="total-time-value" id="totalTimeVal">—</div>
+                  <div class="total-time-sub" id="totalTimeSub">Set times on tasks to track</div>
+                </div>
+                <span style="font-size:32px;opacity:.2">⏳</span>
               </div>
             </div>
           </div>
-          <div class="card">
-            <div class="card-title">By Category</div>
-            <div class="pie-legend" id="pieLegend"></div>
+        </div>
+      </div>
+
+      <!-- ══ WEEK VIEW ══ -->
+      <div class="view" id="view-week">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Weekly Overview</div>
+            <div class="page-sub">This week at a glance</div>
           </div>
         </div>
-      </div>
-    </div>
+        <div class="week-grid" id="weekGrid"></div>
 
-    <!-- ══ WEEK VIEW ══ -->
-    <div class="view" id="view-week">
-      <div class="page-header">
-        <div>
-          <div class="page-title">Weekly Overview</div>
-          <div class="page-sub">This week at a glance</div>
+        <div class="section-title">📚 Past Days</div>
+        <div class="past-list" id="pastList"></div>
+      </div>
+
+      <!-- ══ RECURRING VIEW ══ -->
+      <div class="view" id="view-recurring">
+        <div class="page-header">
+          <div>
+            <div class="page-title">🔁 Recurring Tasks</div>
+            <div class="page-sub">These tasks auto-appear on every day you open</div>
+          </div>
+        </div>
+
+        <div class="rec-info-box">
+          <strong>How it works:</strong> Tasks you add here will automatically appear on every day.
+          You can <strong>enable/disable</strong> each one or <strong>delete</strong> it permanently.
+          Once auto-added to a day, they behave like normal tasks (you can check them off or remove them from that day
+          only).
+        </div>
+
+        <!-- Add Recurring Task -->
+        <div class="card recurring-section">
+          <div class="card-title">Add Recurring Task</div>
+          <div class="add-task-form">
+            <input class="task-input" id="recInput" placeholder="e.g. Morning workout, Read 20 pages…" maxlength="120"
+              onkeydown="if(event.key==='Enter') addRecurring()" />
+            <select class="cat-select" id="recCatSelect">
+              <option value="Work">💼 Work</option>
+              <option value="Health">🏃 Health</option>
+              <option value="Learning">📚 Learning</option>
+              <option value="Personal">💛 Personal</option>
+              <option value="Social">👥 Social</option>
+            </select>
+            <button class="add-btn" onclick="addRecurring()">+ Add</button>
+          </div>
+        </div>
+
+        <!-- Recurring List -->
+        <div class="card">
+          <div class="recurring-header">
+            <div class="card-title" style="margin-bottom:0">Your Recurring Tasks</div>
+          </div>
+          <div class="recurring-list" id="recurringList"></div>
         </div>
       </div>
-      <div class="week-grid" id="weekGrid"></div>
 
-      <div class="section-title">📚 Past Days</div>
-      <div class="past-list" id="pastList"></div>
-    </div>
-
-    <!-- ══ RECURRING VIEW ══ -->
-    <div class="view" id="view-recurring">
-      <div class="page-header">
-        <div>
-          <div class="page-title">🔁 Recurring Tasks</div>
-          <div class="page-sub">These tasks auto-appear on every day you open</div>
-        </div>
-      </div>
-
-      <div class="rec-info-box">
-        <strong>How it works:</strong> Tasks you add here will automatically appear on every day.
-        You can <strong>enable/disable</strong> each one or <strong>delete</strong> it permanently.
-        Once auto-added to a day, they behave like normal tasks (you can check them off or remove them from that day only).
-      </div>
-
-      <!-- Add Recurring Task -->
-      <div class="card recurring-section">
-        <div class="card-title">Add Recurring Task</div>
-        <div class="add-task-form">
-          <input class="task-input" id="recInput" placeholder="e.g. Morning workout, Read 20 pages…" maxlength="120" onkeydown="if(event.key==='Enter') addRecurring()"/>
-          <select class="cat-select" id="recCatSelect">
-            <option value="Work">💼 Work</option>
-            <option value="Health">🏃 Health</option>
-            <option value="Learning">📚 Learning</option>
-            <option value="Personal">💛 Personal</option>
-            <option value="Social">👥 Social</option>
-          </select>
-          <button class="add-btn" onclick="addRecurring()">+ Add</button>
-        </div>
-      </div>
-
-      <!-- Recurring List -->
-      <div class="card">
-        <div class="recurring-header">
-          <div class="card-title" style="margin-bottom:0">Your Recurring Tasks</div>
-        </div>
-        <div class="recurring-list" id="recurringList"></div>
-      </div>
-    </div>
-
-  </main>
-</div>
-
-<!-- Toast -->
-<div class="toast" id="toast"></div>
-
-<!-- Celebrate Popup -->
-<div class="celebrate-overlay" id="celebrateOverlay" onclick="closeCelebrate(event)">
-  <div class="celebrate-box" id="celebrateBox">
-    <div class="confetti-wrap" id="confettiWrap"></div>
-    <span class="celebrate-emoji">🎉</span>
-    <div class="celebrate-title">Amazing Work!</div>
-    <div class="celebrate-sub">You've completed <strong id="celebratePct">90%</strong> of your tasks today.<br>You're absolutely crushing it! 🚀</div>
-    <button class="celebrate-close" onclick="closeCelebrate()">Keep Going! 💪</button>
+    </main>
   </div>
-</div>
 
-<script>
-// ─────────────────────────────────────────────
-//  CONSTANTS
-// ─────────────────────────────────────────────
-const CATS = {
-  Work:     { color: '#7c5cfc', emoji: '💼' },
-  Health:   { color: '#2dd4a7', emoji: '🏃' },
-  Learning: { color: '#f59e0b', emoji: '📚' },
-  Personal: { color: '#f472b6', emoji: '💛' },
-  Social:   { color: '#38bdf8', emoji: '👥' },
-};
-const STORAGE_KEY = 'dailytracker_v1';
-const REC_KEY = 'dailytracker_recurring_v1';
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
 
-// ─────────────────────────────────────────────
-//  STATE
-// ─────────────────────────────────────────────
-let currentDateKey = todayKey(); // "YYYY-MM-DD"
-let db = loadDB();
-let recurringTasks = loadRecurring(); // [{id, text, cat, enabled}]
+  <!-- Celebrate Popup -->
+  <div class="celebrate-overlay" id="celebrateOverlay" onclick="closeCelebrate(event)">
+    <div class="celebrate-box" id="celebrateBox">
+      <div class="confetti-wrap" id="confettiWrap"></div>
+      <span class="celebrate-emoji">🎉</span>
+      <div class="celebrate-title">Amazing Work!</div>
+      <div class="celebrate-sub">You've completed <strong id="celebratePct">90%</strong> of your tasks today.<br>You're
+        absolutely crushing it! 🚀</div>
+      <button class="celebrate-close" onclick="closeCelebrate()">Keep Going! 💪</button>
+    </div>
+  </div>
 
-function dateKey(d) {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
-}
+  <script>
+    // ─────────────────────────────────────────────
+    //  CONSTANTS
+    // ─────────────────────────────────────────────
+    const CATS = {
+      Work: { color: '#7c5cfc', emoji: '💼' },
+      Health: { color: '#2dd4a7', emoji: '🏃' },
+      Learning: { color: '#f59e0b', emoji: '📚' },
+      Personal: { color: '#f472b6', emoji: '💛' },
+      Social: { color: '#38bdf8', emoji: '👥' },
+    };
+    const STORAGE_KEY = 'dailytracker_v1';
+    const REC_KEY = 'dailytracker_recurring_v1';
 
-function todayKey() {
-  return dateKey(new Date());
-}
+    // ─────────────────────────────────────────────
+    //  STATE
+    // ─────────────────────────────────────────────
+    let currentDateKey = todayKey(); // "YYYY-MM-DD"
+    let db = loadDB();
+    let recurringTasks = loadRecurring(); // [{id, text, cat, enabled}]
 
-function loadDB() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
-  catch { return {}; }
-}
-
-function saveDB() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
-}
-
-function loadRecurring() {
-  try { return JSON.parse(localStorage.getItem(REC_KEY)) || []; }
-  catch { return []; }
-}
-
-function saveRecurring() {
-  localStorage.setItem(REC_KEY, JSON.stringify(recurringTasks));
-}
-
-function getDay(key) {
-  if (!db[key]) db[key] = { tasks: [] };
-  return db[key];
-}
-
-// ─────────────────────────────────────────────
-//  VIEW SWITCHER
-// ─────────────────────────────────────────────
-function showView(v) {
-  document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-  document.getElementById('view-' + v).classList.add('active');
-  document.getElementById('nav-' + v).classList.add('active');
-  if (v === 'week') renderWeek();
-  if (v === 'day') renderDay();
-  if (v === 'recurring') renderRecurringView();
-}
-
-// ─────────────────────────────────────────────
-//  DAY VIEW
-// ─────────────────────────────────────────────
-function changeDay(delta) {
-  const [y, mo, dy] = currentDateKey.split('-').map(Number);
-  const d = new Date(y, mo - 1, dy + delta);
-  currentDateKey = dateKey(d);
-  renderDay();
-}
-
-function renderDay() {
-  const today = todayKey();
-  const d = new Date(currentDateKey + 'T00:00:00');
-  const isToday = currentDateKey === today;
-  const isFuture = currentDateKey > today;
-
-  // Header
-  const label = isToday ? 'Today' : d.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' });
-  document.getElementById('dayViewTitle').textContent = label;
-  document.getElementById('dayViewSub').textContent = d.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-  document.getElementById('dayNavLabel').textContent = d.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
-  document.getElementById('nextDay').disabled = isToday;
-
-  const dayData = getDay(currentDateKey);
-  injectRecurringTasks(currentDateKey);
-  renderTaskList(dayData.tasks, isFuture);
-  renderPie(dayData.tasks);
-}
-
-function renderTaskList(tasks, readOnly) {
-  const list = document.getElementById('tasksList');
-  list.innerHTML = '';
-  if (!tasks.length) {
-    list.innerHTML = `<div class="empty-state"><div class="emoji">🌟</div>No tasks yet — add your first one!</div>`;
-    return;
-  }
-  tasks.forEach((task, i) => {
-    const el = document.createElement('div');
-    el.className = 'task-item' + (task.done ? ' done' : '');
-    el.dataset.cat = task.cat;
-    el.innerHTML = `
-      <div class="task-check">${task.done ? '✓' : ''}</div>
-      <span class="task-label">${escHtml(task.text)}</span>
-      <span class="task-cat-tag tag-${task.cat}">${CATS[task.cat]?.emoji || ''} ${task.cat}</span>
-      <button class="task-del-btn" onclick="deleteTask(${i},event)" title="Delete">×</button>`;
-    el.addEventListener('click', () => toggleTask(i));
-    list.appendChild(el);
-  });
-}
-
-function addTask() {
-  const input = document.getElementById('taskInput');
-  const cat   = document.getElementById('catSelect').value;
-  const text  = input.value.trim();
-  if (!text) { input.focus(); return; }
-  const day = getDay(currentDateKey);
-  day.tasks.push({ text, cat, done: false, created: Date.now() });
-  saveDB();
-  input.value = '';
-  input.focus();
-  renderDay();
-  showToast('Task added ✨');
-}
-
-function toggleTask(i) {
-  const day = getDay(currentDateKey);
-  day.tasks[i].done = !day.tasks[i].done;
-  saveDB();
-  renderDay();
-}
-
-function deleteTask(i, e) {
-  e.stopPropagation();
-  const day = getDay(currentDateKey);
-  day.tasks.splice(i, 1);
-  saveDB();
-  renderDay();
-  showToast('Task removed');
-}
-
-// ─────────────────────────────────────────────
-//  PIE CHART
-// ─────────────────────────────────────────────
-function renderPie(tasks) {
-  const total = tasks.length;
-  const done  = tasks.filter(t => t.done).length;
-  const pct   = total ? Math.round(done / total * 100) : 0;
-
-  document.getElementById('piePct').textContent = pct + '%';
-  document.getElementById('doneCnt').textContent = done + ' done';
-  document.getElementById('totalCnt').textContent = total + ' total';
-  document.getElementById('progressBar').style.width = pct + '%';
-
-  // 🎉 Check for 90% celebration
-  checkCelebrate(tasks);
-
-  // Build category data
-  const catData = {};
-  Object.keys(CATS).forEach(k => { catData[k] = { total: 0, done: 0 }; });
-  tasks.forEach(t => {
-    if (catData[t.cat]) {
-      catData[t.cat].total++;
-      if (t.done) catData[t.cat].done++;
+    function dateKey(d) {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
     }
-  });
 
-  // Legend
-  const legend = document.getElementById('pieLegend');
-  legend.innerHTML = '';
-  Object.entries(CATS).forEach(([name, cfg]) => {
-    const d = catData[name];
-    if (d.total === 0) return;
-    legend.innerHTML += `
+    function todayKey() {
+      return dateKey(new Date());
+    }
+
+    function loadDB() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+      catch { return {}; }
+    }
+
+    function saveDB() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+    }
+
+    function loadRecurring() {
+      try { return JSON.parse(localStorage.getItem(REC_KEY)) || []; }
+      catch { return []; }
+    }
+
+    function saveRecurring() {
+      localStorage.setItem(REC_KEY, JSON.stringify(recurringTasks));
+    }
+
+    function getDay(key) {
+      if (!db[key]) db[key] = { tasks: [] };
+      return db[key];
+    }
+
+    // ─────────────────────────────────────────────
+    //  VIEW SWITCHER
+    // ─────────────────────────────────────────────
+    function showView(v) {
+      document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById('view-' + v).classList.add('active');
+      document.getElementById('nav-' + v).classList.add('active');
+      if (v === 'week') renderWeek();
+      if (v === 'day') renderDay();
+      if (v === 'recurring') renderRecurringView();
+    }
+
+    // ─────────────────────────────────────────────
+    //  DAY VIEW
+    // ─────────────────────────────────────────────
+    function changeDay(delta) {
+      const [y, mo, dy] = currentDateKey.split('-').map(Number);
+      const d = new Date(y, mo - 1, dy + delta);
+      currentDateKey = dateKey(d);
+      renderDay();
+    }
+
+    function renderDay() {
+      const today = todayKey();
+      const d = new Date(currentDateKey + 'T00:00:00');
+      const isToday = currentDateKey === today;
+      const isFuture = currentDateKey > today;
+
+      // Header
+      const label = isToday ? 'Today' : d.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' });
+      document.getElementById('dayViewTitle').textContent = label;
+      document.getElementById('dayViewSub').textContent = d.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      document.getElementById('dayNavLabel').textContent = d.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
+      document.getElementById('nextDay').disabled = isToday;
+
+      const dayData = getDay(currentDateKey);
+      injectRecurringTasks(currentDateKey);
+      renderTaskList(dayData.tasks, isFuture);
+      renderPie(dayData.tasks);
+    }
+
+    function renderTaskList(tasks, readOnly) {
+      const list = document.getElementById('tasksList');
+      list.innerHTML = '';
+      if (!tasks.length) {
+        list.innerHTML = `<div class="empty-state"><div class="emoji">🌟</div>No tasks yet — add your first one!</div>`;
+        return;
+      }
+      tasks.forEach((task, i) => {
+        const durLabel = fmtDuration(task.startTime, task.endTime);
+        const el = document.createElement('div');
+        el.className = 'task-item' + (task.done ? ' done' : '');
+        el.dataset.cat = task.cat;
+        el.innerHTML = `
+      <div class="task-check">${task.done ? '✓' : ''}</div>
+      <div style="flex:1;min-width:0">
+        <span class="task-label">${escHtml(task.text)}</span>
+        <div class="task-time-editor" id="timeEd_${i}">
+          <span class="time-label-sm">⏰ From</span>
+          <input class="time-input" type="time" id="tS_${i}" value="${task.startTime||''}" onclick="event.stopPropagation()">
+          <span class="time-label-sm">To</span>
+          <input class="time-input" type="time" id="tE_${i}" value="${task.endTime||''}" onclick="event.stopPropagation()">
+          <button class="time-save-btn" onclick="setTaskTime(${i},event)">✓ Save</button>
+        </div>
+      </div>
+      <span class="task-duration-badge" onclick="toggleTimeEditor(${i},event)">${durLabel ? '⏰ '+durLabel : '⊕ time'}</span>
+      <span class="task-cat-tag tag-${task.cat}">${CATS[task.cat]?.emoji||''} ${task.cat}</span>
+      <button class="task-del-btn" onclick="deleteTask(${i},event)" title="Delete">×</button>`;
+        el.addEventListener('click', () => toggleTask(i));
+        list.appendChild(el);
+      });
+    }
+
+    function addTask() {
+      const input = document.getElementById('taskInput');
+      const cat = document.getElementById('catSelect').value;
+      const text = input.value.trim();
+      const startTime = document.getElementById('taskStartTime').value;
+      const endTime   = document.getElementById('taskEndTime').value;
+      if (!text) { input.focus(); return; }
+      const day = getDay(currentDateKey);
+      day.tasks.push({ text, cat, done: false, created: Date.now(),
+        startTime: startTime || '', endTime: endTime || '' });
+      saveDB();
+      input.value = '';
+      document.getElementById('taskStartTime').value = '';
+      document.getElementById('taskEndTime').value = '';
+      input.focus();
+      renderDay();
+      showToast('Task added ✨');
+    }
+
+    function toggleTask(i) {
+      const day = getDay(currentDateKey);
+      day.tasks[i].done = !day.tasks[i].done;
+      saveDB();
+      renderDay();
+    }
+
+    function deleteTask(i, e) {
+      e.stopPropagation();
+      const day = getDay(currentDateKey);
+      day.tasks.splice(i, 1);
+      saveDB();
+      renderDay();
+      showToast('Task removed');
+    }
+
+    // ─────────────────────────────────────────────
+    //  PIE CHART
+    // ─────────────────────────────────────────────
+    function renderPie(tasks) {
+      const total = tasks.length;
+      const done = tasks.filter(t => t.done).length;
+      const pct = total ? Math.round(done / total * 100) : 0;
+
+      document.getElementById('piePct').textContent = pct + '%';
+      document.getElementById('doneCnt').textContent = done + ' done';
+      document.getElementById('totalCnt').textContent = total + ' total';
+      document.getElementById('progressBar').style.width = pct + '%';
+
+      // 🎉 Check for 90% celebration
+      checkCelebrate(tasks);
+
+      // Build category data
+      const catData = {};
+      Object.keys(CATS).forEach(k => { catData[k] = { total: 0, done: 0 }; });
+      tasks.forEach(t => {
+        if (catData[t.cat]) {
+          catData[t.cat].total++;
+          if (t.done) catData[t.cat].done++;
+        }
+      });
+
+      // Legend
+      const legend = document.getElementById('pieLegend');
+      legend.innerHTML = '';
+      Object.entries(CATS).forEach(([name, cfg]) => {
+        const d = catData[name];
+        if (d.total === 0) return;
+        legend.innerHTML += `
       <div class="legend-item">
         <div class="legend-dot" style="background:${cfg.color}"></div>
         <span class="legend-label">${cfg.emoji} ${name}</span>
         <span class="legend-count">${d.done}/${d.total}</span>
       </div>`;
-  });
+      });
 
-  // Canvas pie
-  drawPie('pieCanvas', tasks, catData, total, done, 180);
-}
+      // Canvas pie
+      drawPie('pieCanvas', tasks, catData, total, done, 180);
 
-function drawPie(canvasId, tasks, catData, total, done, size) {
-  const canvas = document.getElementById(canvasId);
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  canvas.width = size; canvas.height = size;
-  ctx.clearRect(0, 0, size, size);
+      // Total time
+      const timedTasks = tasks.filter(t => t.startTime && t.endTime && t.endTime > t.startTime);
+      const totalMins = timedTasks.reduce((sum, t) => sum + timeDiffMins(t.startTime, t.endTime), 0);
+      const tv = document.getElementById('totalTimeVal');
+      const ts = document.getElementById('totalTimeSub');
+      if (tv) {
+        if (timedTasks.length === 0) {
+          tv.textContent = '—';
+          ts.textContent = 'Set times on tasks to track';
+        } else {
+          tv.textContent = formatMins(totalMins);
+          ts.textContent = `Across ${timedTasks.length} timed task${timedTasks.length!==1?'s':''}`;
+        }
+      }
+    }
 
-  const cx = size / 2, cy = size / 2;
-  const outerR = size / 2 - 6;
-  const innerR = outerR * 0.62;
-  const gap = 0.03;
+    function drawPie(canvasId, tasks, catData, total, done, size) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      canvas.width = size; canvas.height = size;
+      ctx.clearRect(0, 0, size, size);
 
-  if (total === 0) {
-    // Empty ring
-    ctx.beginPath();
-    ctx.arc(cx, cy, outerR, 0, Math.PI * 2);
-    ctx.arc(cx, cy, innerR, 0, Math.PI * 2, true);
-    ctx.fillStyle = '#1f1f35';
-    ctx.fill();
-    return;
-  }
+      const cx = size / 2, cy = size / 2;
+      const outerR = size / 2 - 6;
+      const innerR = outerR * 0.62;
+      const gap = 0.03;
 
-  // Draw segments by DONE tasks per category
-  const segments = [];
-  if (done === 0) {
-    // Show grey full ring
-    segments.push({ color: '#1f1f35', value: 1 });
-  } else {
-    Object.entries(CATS).forEach(([name, cfg]) => {
-      const d = catData[name];
-      if (d.done > 0) segments.push({ color: cfg.color, value: d.done });
-    });
-  }
+      if (total === 0) {
+        // Empty ring
+        ctx.beginPath();
+        ctx.arc(cx, cy, outerR, 0, Math.PI * 2);
+        ctx.arc(cx, cy, innerR, 0, Math.PI * 2, true);
+        ctx.fillStyle = '#1f1f35';
+        ctx.fill();
+        return;
+      }
 
-  const totalVal = segments.reduce((a, s) => a + s.value, 0);
-  let angle = -Math.PI / 2;
-  segments.forEach(seg => {
-    const sweep = (seg.value / totalVal) * (Math.PI * 2) - (segments.length > 1 ? gap : 0);
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.arc(cx, cy, outerR, angle + (segments.length > 1 ? gap / 2 : 0), angle + sweep + (segments.length > 1 ? gap / 2 : 0));
-    ctx.arc(cx, cy, innerR, angle + sweep + (segments.length > 1 ? gap / 2 : 0), angle + (segments.length > 1 ? gap / 2 : 0), true);
-    ctx.closePath();
-    ctx.fillStyle = seg.color;
-    ctx.shadowColor = seg.color;
-    ctx.shadowBlur = 8;
-    ctx.fill();
-    ctx.shadowBlur = 0;
-    angle += sweep + (segments.length > 1 ? gap : 0);
-  });
+      // Draw segments by DONE tasks per category
+      const segments = [];
+      if (done === 0) {
+        // Show grey full ring
+        segments.push({ color: '#1f1f35', value: 1 });
+      } else {
+        Object.entries(CATS).forEach(([name, cfg]) => {
+          const d = catData[name];
+          if (d.done > 0) segments.push({ color: cfg.color, value: d.done });
+        });
+      }
 
-  // Unfilled part (grey)
-  if (done > 0 && done < total) {
-    const unfilledRatio = 1 - (done / total);
-    const startAngle = -Math.PI / 2 + (done / total) * Math.PI * 2;
-    ctx.beginPath();
-    ctx.arc(cx, cy, outerR, startAngle, startAngle + unfilledRatio * Math.PI * 2);
-    ctx.arc(cx, cy, innerR, startAngle + unfilledRatio * Math.PI * 2, startAngle, true);
-    ctx.closePath();
-    ctx.fillStyle = '#1f1f35';
-    ctx.fill();
-  }
-}
+      const totalVal = segments.reduce((a, s) => a + s.value, 0);
+      let angle = -Math.PI / 2;
+      segments.forEach(seg => {
+        const sweep = (seg.value / totalVal) * (Math.PI * 2) - (segments.length > 1 ? gap : 0);
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, outerR, angle + (segments.length > 1 ? gap / 2 : 0), angle + sweep + (segments.length > 1 ? gap / 2 : 0));
+        ctx.arc(cx, cy, innerR, angle + sweep + (segments.length > 1 ? gap / 2 : 0), angle + (segments.length > 1 ? gap / 2 : 0), true);
+        ctx.closePath();
+        ctx.fillStyle = seg.color;
+        ctx.shadowColor = seg.color;
+        ctx.shadowBlur = 8;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        angle += sweep + (segments.length > 1 ? gap : 0);
+      });
 
-// Mini pie for week cards
-function drawMiniPie(canvas, tasks, size) {
-  const ctx = canvas.getContext('2d');
-  canvas.width = size; canvas.height = size;
-  ctx.clearRect(0, 0, size, size);
-  const cx = size / 2, cy = size / 2;
-  const outerR = size / 2 - 2;
-  const innerR = outerR * 0.58;
-  const total = tasks.length;
-  const done  = tasks.filter(t => t.done).length;
+      // Unfilled part (grey)
+      if (done > 0 && done < total) {
+        const unfilledRatio = 1 - (done / total);
+        const startAngle = -Math.PI / 2 + (done / total) * Math.PI * 2;
+        ctx.beginPath();
+        ctx.arc(cx, cy, outerR, startAngle, startAngle + unfilledRatio * Math.PI * 2);
+        ctx.arc(cx, cy, innerR, startAngle + unfilledRatio * Math.PI * 2, startAngle, true);
+        ctx.closePath();
+        ctx.fillStyle = '#1f1f35';
+        ctx.fill();
+      }
+    }
 
-  if (total === 0) {
-    ctx.beginPath(); ctx.arc(cx, cy, outerR, 0, Math.PI*2);
-    ctx.arc(cx, cy, innerR, 0, Math.PI*2, true);
-    ctx.fillStyle = '#1f1f35'; ctx.fill(); return;
-  }
+    // Mini pie for week cards
+    function drawMiniPie(canvas, tasks, size) {
+      const ctx = canvas.getContext('2d');
+      canvas.width = size; canvas.height = size;
+      ctx.clearRect(0, 0, size, size);
+      const cx = size / 2, cy = size / 2;
+      const outerR = size / 2 - 2;
+      const innerR = outerR * 0.58;
+      const total = tasks.length;
+      const done = tasks.filter(t => t.done).length;
 
-  const catData = {};
-  Object.keys(CATS).forEach(k => { catData[k] = { total: 0, done: 0 }; });
-  tasks.forEach(t => { if (catData[t.cat]) { catData[t.cat].total++; if (t.done) catData[t.cat].done++; } });
+      if (total === 0) {
+        ctx.beginPath(); ctx.arc(cx, cy, outerR, 0, Math.PI * 2);
+        ctx.arc(cx, cy, innerR, 0, Math.PI * 2, true);
+        ctx.fillStyle = '#1f1f35'; ctx.fill(); return;
+      }
 
-  // Full ring - all tasks by category (faded)
-  let angle = -Math.PI / 2;
-  Object.entries(CATS).forEach(([name, cfg]) => {
-    const d = catData[name];
-    if (d.total === 0) return;
-    const sweep = (d.total / total) * Math.PI * 2;
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.arc(cx, cy, outerR, angle, angle + sweep);
-    ctx.arc(cx, cy, innerR, angle + sweep, angle, true);
-    ctx.closePath();
-    ctx.fillStyle = hexAlpha(cfg.color, 0.25);
-    ctx.fill();
-    angle += sweep;
-  });
+      const catData = {};
+      Object.keys(CATS).forEach(k => { catData[k] = { total: 0, done: 0 }; });
+      tasks.forEach(t => { if (catData[t.cat]) { catData[t.cat].total++; if (t.done) catData[t.cat].done++; } });
 
-  // Done tasks overlay
-  if (done > 0) {
-    const doneRatio = done / total;
-    angle = -Math.PI / 2;
-    let remaining = doneRatio;
-    Object.entries(CATS).forEach(([name, cfg]) => {
-      const d = catData[name];
-      if (d.total === 0 || remaining <= 0) return;
-      const catRatio = d.total / total;
-      const filled = Math.min(catRatio, remaining);
-      const sweep = filled * Math.PI * 2;
-      ctx.beginPath();
-      ctx.moveTo(cx, cy);
-      ctx.arc(cx, cy, outerR, angle, angle + sweep);
-      ctx.arc(cx, cy, innerR, angle + sweep, angle, true);
-      ctx.closePath();
-      ctx.fillStyle = cfg.color;
-      ctx.shadowColor = cfg.color; ctx.shadowBlur = 6;
-      ctx.fill(); ctx.shadowBlur = 0;
-      angle += catRatio * Math.PI * 2;
-      remaining -= filled;
-    });
-  }
-}
+      // Full ring - all tasks by category (faded)
+      let angle = -Math.PI / 2;
+      Object.entries(CATS).forEach(([name, cfg]) => {
+        const d = catData[name];
+        if (d.total === 0) return;
+        const sweep = (d.total / total) * Math.PI * 2;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, outerR, angle, angle + sweep);
+        ctx.arc(cx, cy, innerR, angle + sweep, angle, true);
+        ctx.closePath();
+        ctx.fillStyle = hexAlpha(cfg.color, 0.25);
+        ctx.fill();
+        angle += sweep;
+      });
 
-function hexAlpha(hex, alpha) {
-  const r = parseInt(hex.slice(1,3),16);
-  const g = parseInt(hex.slice(3,5),16);
-  const b = parseInt(hex.slice(5,7),16);
-  return `rgba(${r},${g},${b},${alpha})`;
-}
+      // Done tasks overlay
+      if (done > 0) {
+        const doneRatio = done / total;
+        angle = -Math.PI / 2;
+        let remaining = doneRatio;
+        Object.entries(CATS).forEach(([name, cfg]) => {
+          const d = catData[name];
+          if (d.total === 0 || remaining <= 0) return;
+          const catRatio = d.total / total;
+          const filled = Math.min(catRatio, remaining);
+          const sweep = filled * Math.PI * 2;
+          ctx.beginPath();
+          ctx.moveTo(cx, cy);
+          ctx.arc(cx, cy, outerR, angle, angle + sweep);
+          ctx.arc(cx, cy, innerR, angle + sweep, angle, true);
+          ctx.closePath();
+          ctx.fillStyle = cfg.color;
+          ctx.shadowColor = cfg.color; ctx.shadowBlur = 6;
+          ctx.fill(); ctx.shadowBlur = 0;
+          angle += catRatio * Math.PI * 2;
+          remaining -= filled;
+        });
+      }
+    }
 
-// ─────────────────────────────────────────────
-//  WEEK VIEW
-// ─────────────────────────────────────────────
-function renderWeek() {
-  const today = new Date(todayKey() + 'T00:00:00');
-  const startOfWeek = new Date(today);
-  startOfWeek.setDate(today.getDate() - today.getDay()); // Sunday
+    function hexAlpha(hex, alpha) {
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+      return `rgba(${r},${g},${b},${alpha})`;
+    }
 
-  const weekGrid = document.getElementById('weekGrid');
-  weekGrid.innerHTML = '';
+    // ─────────────────────────────────────────────
+    //  WEEK VIEW
+    // ─────────────────────────────────────────────
+    function renderWeek() {
+      const today = new Date(todayKey() + 'T00:00:00');
+      const startOfWeek = new Date(today);
+      startOfWeek.setDate(today.getDate() - today.getDay()); // Sunday
 
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(startOfWeek);
-    d.setDate(startOfWeek.getDate() + i);
-    const key = dateKey(d);
-    const todayK = todayKey();
-    const isFuture = key > todayK;
-    const isToday = key === todayK;
+      const weekGrid = document.getElementById('weekGrid');
+      weekGrid.innerHTML = '';
 
-    const dayData = db[key] || { tasks: [] };
-    const tasks = dayData.tasks;
-    const total = tasks.length;
-    const done  = tasks.filter(t => t.done).length;
-    const pct   = total ? Math.round(done / total * 100) : 0;
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(startOfWeek);
+        d.setDate(startOfWeek.getDate() + i);
+        const key = dateKey(d);
+        const todayK = todayKey();
+        const isFuture = key > todayK;
+        const isToday = key === todayK;
 
-    const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+        const dayData = db[key] || { tasks: [] };
+        const tasks = dayData.tasks;
+        const total = tasks.length;
+        const done = tasks.filter(t => t.done).length;
+        const pct = total ? Math.round(done / total * 100) : 0;
 
-    const card = document.createElement('div');
-    card.className = 'week-card' + (isToday ? ' today-card' : '');
-    card.innerHTML = `
+        const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+        const card = document.createElement('div');
+        card.className = 'week-card' + (isToday ? ' today-card' : '');
+        card.innerHTML = `
       <div class="week-day-name">${dayNames[i]}<br>${d.getDate()}</div>
       <canvas class="week-mini-pie" id="wpie_${key}" width="60" height="60" style="display:block;margin:0 auto 8px;"></canvas>
       <div class="week-pct">${isFuture && total === 0 ? '—' : pct + '%'}</div>
       <div class="week-task-count">${total ? total + ' task' + (total !== 1 ? 's' : '') : 'No tasks'}</div>
       <div class="week-dots" id="wdots_${key}"></div>`;
-    card.addEventListener('click', () => {
-      currentDateKey = key;
-      showView('day');
-    });
-    weekGrid.appendChild(card);
+        card.addEventListener('click', () => {
+          currentDateKey = key;
+          showView('day');
+        });
+        weekGrid.appendChild(card);
 
-    // Draw mini pie
-    setTimeout(() => {
-      const canvas = document.getElementById('wpie_' + key);
-      if (canvas) drawMiniPie(canvas, tasks, 60);
+        // Draw mini pie
+        setTimeout(() => {
+          const canvas = document.getElementById('wpie_' + key);
+          if (canvas) drawMiniPie(canvas, tasks, 60);
 
-      // Category dots
-      const dotWrap = document.getElementById('wdots_' + key);
-      if (dotWrap) {
-        const cats = [...new Set(tasks.map(t => t.cat))];
-        dotWrap.innerHTML = cats.map(c => `<div class="week-dot" style="background:${CATS[c]?.color||'#444'}"></div>`).join('');
+          // Category dots
+          const dotWrap = document.getElementById('wdots_' + key);
+          if (dotWrap) {
+            const cats = [...new Set(tasks.map(t => t.cat))];
+            dotWrap.innerHTML = cats.map(c => `<div class="week-dot" style="background:${CATS[c]?.color || '#444'}"></div>`).join('');
+          }
+        }, 0);
       }
-    }, 0);
-  }
 
-  // Past days
-  renderPastDays();
-}
+      // Past days
+      renderPastDays();
+    }
 
-function renderPastDays() {
-  const pastList = document.getElementById('pastList');
-  const todayK = todayKey();
+    function renderPastDays() {
+      const pastList = document.getElementById('pastList');
+      const todayK = todayKey();
 
-  const allDays = Object.keys(db)
-    .filter(k => k < todayK && db[k].tasks && db[k].tasks.length > 0)
-    .sort((a, b) => b.localeCompare(a));
+      const allDays = Object.keys(db)
+        .filter(k => k < todayK && db[k].tasks && db[k].tasks.length > 0)
+        .sort((a, b) => b.localeCompare(a));
 
-  if (!allDays.length) {
-    pastList.innerHTML = `<div class="empty-state"><div class="emoji">📖</div>No past days saved yet</div>`;
-    return;
-  }
+      if (!allDays.length) {
+        pastList.innerHTML = `<div class="empty-state"><div class="emoji">📖</div>No past days saved yet</div>`;
+        return;
+      }
 
-  pastList.innerHTML = allDays.map(key => {
-    const tasks = db[key].tasks;
-    const total = tasks.length;
-    const done  = tasks.filter(t => t.done).length;
-    const pct   = total ? Math.round(done / total * 100) : 0;
-    const d = new Date(key + 'T00:00:00');
-    const label = d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
-    return `
+      pastList.innerHTML = allDays.map(key => {
+        const tasks = db[key].tasks;
+        const total = tasks.length;
+        const done = tasks.filter(t => t.done).length;
+        const pct = total ? Math.round(done / total * 100) : 0;
+        const d = new Date(key + 'T00:00:00');
+        const label = d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+        return `
       <div class="past-item" onclick="jumpToDay('${key}')">
         <div class="past-date">📅 ${label}</div>
         <div class="past-bar-wrap"><div class="past-bar" style="width:${pct}%"></div></div>
         <div class="past-pct">${pct}%</div>
         <div class="past-count">${done}/${total} done</div>
       </div>`;
-  }).join('');
-}
-
-function jumpToDay(key) {
-  currentDateKey = key;
-  showView('day');
-}
-
-// ─────────────────────────────────────────────
-//  UTILS
-// ─────────────────────────────────────────────
-function escHtml(str) {
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-let toastTimer;
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
-}
-
-// ─────────────────────────────────────────────
-//  RECURRING TASKS LOGIC
-// ─────────────────────────────────────────────
-function injectRecurringTasks(dateKey) {
-  const enabled = recurringTasks.filter(r => r.enabled);
-  if (!enabled.length) return;
-  const day = getDay(dateKey);
-  let changed = false;
-  enabled.forEach(rec => {
-    // Check if already injected (match by recId)
-    const exists = day.tasks.some(t => t.recId === rec.id);
-    if (!exists) {
-      day.tasks.unshift({ text: rec.text, cat: rec.cat, done: false, created: Date.now(), recId: rec.id });
-      changed = true;
+      }).join('');
     }
-  });
-  if (changed) saveDB();
-}
 
-function addRecurring() {
-  const input = document.getElementById('recInput');
-  const cat   = document.getElementById('recCatSelect').value;
-  const text  = input.value.trim();
-  if (!text) { input.focus(); return; }
-  const rec = { id: Date.now().toString(), text, cat, enabled: true };
-  recurringTasks.push(rec);
-  saveRecurring();
-  input.value = '';
-  input.focus();
-  renderRecurringView();
-  showToast('Recurring task added 🔁');
-}
+    function jumpToDay(key) {
+      currentDateKey = key;
+      showView('day');
+    }
 
-function toggleRecurring(id) {
-  const rec = recurringTasks.find(r => r.id === id);
-  if (!rec) return;
-  rec.enabled = !rec.enabled;
-  saveRecurring();
-  renderRecurringView();
-  showToast(rec.enabled ? 'Enabled ✅' : 'Disabled ⏸');
-}
+    // ─────────────────────────────────────────────
+    //  UTILS
+    // ─────────────────────────────────────────────
+    function escHtml(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
 
-function deleteRecurring(id) {
-  recurringTasks = recurringTasks.filter(r => r.id !== id);
-  saveRecurring();
-  renderRecurringView();
-  showToast('Recurring task removed');
-}
+    // Time helpers
+    function timeDiffMins(start, end) {
+      if (!start || !end) return 0;
+      const [sh, sm] = start.split(':').map(Number);
+      const [eh, em] = end.split(':').map(Number);
+      return (eh * 60 + em) - (sh * 60 + sm);
+    }
+    function formatMins(mins) {
+      if (mins <= 0) return '0m';
+      const h = Math.floor(mins / 60);
+      const m = mins % 60;
+      return h > 0 ? (m > 0 ? `${h}h ${m}m` : `${h}h`) : `${m}m`;
+    }
+    function fmtDuration(start, end) {
+      if (!start) return '';
+      const mins = timeDiffMins(start, end);
+      const fmt12 = t => {
+        const [h, m] = t.split(':').map(Number);
+        const ap = h >= 12 ? 'PM' : 'AM';
+        return `${h % 12 || 12}:${String(m).padStart(2,'0')} ${ap}`;
+      };
+      if (!end || mins <= 0) return fmt12(start);
+      return `${fmt12(start)} – ${fmt12(end)} (${formatMins(mins)})`;
+    }
 
-function renderRecurringView() {
-  const list = document.getElementById('recurringList');
-  if (!list) return;
-  if (!recurringTasks.length) {
-    list.innerHTML = `<div class="empty-state"><div class="emoji">🔁</div>No recurring tasks yet — add one above!</div>`;
-    return;
-  }
-  list.innerHTML = '';
-  recurringTasks.forEach(rec => {
-    const el = document.createElement('div');
-    el.className = 'rec-item' + (rec.enabled ? '' : ' disabled');
-    el.dataset.cat = rec.cat;
-    el.innerHTML = `
+    function toggleTimeEditor(idx, e) {
+      e.stopPropagation();
+      const ed = document.getElementById('timeEd_' + idx);
+      if (ed) ed.classList.toggle('open');
+    }
+
+    function setTaskTime(idx, e) {
+      e.stopPropagation();
+      const day = getDay(currentDateKey);
+      const task = day.tasks[idx];
+      if (!task) return;
+      const s = document.getElementById('tS_' + idx);
+      const en = document.getElementById('tE_' + idx);
+      task.startTime = s ? s.value : '';
+      task.endTime   = en ? en.value : '';
+      saveDB();
+      renderDay();
+      showToast('Time saved ⏰');
+    }
+
+    let toastTimer;
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
+    }
+
+    // ─────────────────────────────────────────────
+    //  RECURRING TASKS LOGIC
+    // ─────────────────────────────────────────────
+    function injectRecurringTasks(dateKey) {
+      const enabled = recurringTasks.filter(r => r.enabled);
+      if (!enabled.length) return;
+      const day = getDay(dateKey);
+      let changed = false;
+      enabled.forEach(rec => {
+        // Check if already injected (match by recId)
+        const exists = day.tasks.some(t => t.recId === rec.id);
+        if (!exists) {
+          day.tasks.unshift({ text: rec.text, cat: rec.cat, done: false, created: Date.now(), recId: rec.id });
+          changed = true;
+        }
+      });
+      if (changed) saveDB();
+    }
+
+    function addRecurring() {
+      const input = document.getElementById('recInput');
+      const cat = document.getElementById('recCatSelect').value;
+      const text = input.value.trim();
+      if (!text) { input.focus(); return; }
+      const rec = { id: Date.now().toString(), text, cat, enabled: true };
+      recurringTasks.push(rec);
+      saveRecurring();
+      input.value = '';
+      input.focus();
+      renderRecurringView();
+      showToast('Recurring task added 🔁');
+    }
+
+    function toggleRecurring(id) {
+      const rec = recurringTasks.find(r => r.id === id);
+      if (!rec) return;
+      rec.enabled = !rec.enabled;
+      saveRecurring();
+      renderRecurringView();
+      showToast(rec.enabled ? 'Enabled ✅' : 'Disabled ⏸');
+    }
+
+    function deleteRecurring(id) {
+      recurringTasks = recurringTasks.filter(r => r.id !== id);
+      saveRecurring();
+      renderRecurringView();
+      showToast('Recurring task removed');
+    }
+
+    function renderRecurringView() {
+      const list = document.getElementById('recurringList');
+      if (!list) return;
+      if (!recurringTasks.length) {
+        list.innerHTML = `<div class="empty-state"><div class="emoji">🔁</div>No recurring tasks yet — add one above!</div>`;
+        return;
+      }
+      list.innerHTML = '';
+      recurringTasks.forEach(rec => {
+        const el = document.createElement('div');
+        el.className = 'rec-item' + (rec.enabled ? '' : ' disabled');
+        el.dataset.cat = rec.cat;
+        el.innerHTML = `
       <span class="rec-label">${escHtml(rec.text)}</span>
       <span class="rec-cat-tag tag-${rec.cat}">${CATS[rec.cat]?.emoji || ''} ${rec.cat}</span>
       <label class="toggle" title="${rec.enabled ? 'Disable' : 'Enable'}">
@@ -1003,73 +1799,74 @@ function renderRecurringView() {
         <span class="slider"></span>
       </label>
       <button class="rec-del-btn" onclick="deleteRecurring('${rec.id}')" title="Delete permanently">×</button>`;
-    list.appendChild(el);
-  });
-}
+        list.appendChild(el);
+      });
+    }
 
-// ─────────────────────────────────────────────
-//  LIVE CLOCK
-// ─────────────────────────────────────────────
-function updateClock() {
-  const now = new Date();
-  const hh = String(now.getHours()).padStart(2, '0');
-  const mm = String(now.getMinutes()).padStart(2, '0');
-  const ss = String(now.getSeconds()).padStart(2, '0');
-  document.getElementById('clockTime').textContent = `${hh}:${mm}:${ss}`;
-  const dateStr = now.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
-  document.getElementById('clockDate').textContent = dateStr;
-}
-updateClock();
-setInterval(updateClock, 1000);
+    // ─────────────────────────────────────────────
+    //  LIVE CLOCK
+    // ─────────────────────────────────────────────
+    function updateClock() {
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2, '0');
+      const mm = String(now.getMinutes()).padStart(2, '0');
+      const ss = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('clockTime').textContent = `${hh}:${mm}:${ss}`;
+      const dateStr = now.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
+      document.getElementById('clockDate').textContent = dateStr;
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
 
-// ─────────────────────────────────────────────
-//  CELEBRATE POPUP
-// ─────────────────────────────────────────────
-let celebratedToday = localStorage.getItem('celebrated_' + todayKey()) === '1';
+    // ─────────────────────────────────────────────
+    //  CELEBRATE POPUP
+    // ─────────────────────────────────────────────
+    let celebratedToday = localStorage.getItem('celebrated_' + todayKey()) === '1';
 
-function checkCelebrate(tasks) {
-  if (celebratedToday) return;
-  if (currentDateKey !== todayKey()) return;
-  const total = tasks.length;
-  if (total === 0) return;
-  const done = tasks.filter(t => t.done).length;
-  const pct  = Math.round(done / total * 100);
-  if (pct >= 90) {
-    celebratedToday = true;
-    localStorage.setItem('celebrated_' + todayKey(), '1');
-    document.getElementById('celebratePct').textContent = pct + '%';
-    spawnConfetti();
-    document.getElementById('celebrateOverlay').classList.add('show');
-  }
-}
+    function checkCelebrate(tasks) {
+      if (celebratedToday) return;
+      if (currentDateKey !== todayKey()) return;
+      const total = tasks.length;
+      if (total === 0) return;
+      const done = tasks.filter(t => t.done).length;
+      const pct = Math.round(done / total * 100);
+      if (pct >= 90) {
+        celebratedToday = true;
+        localStorage.setItem('celebrated_' + todayKey(), '1');
+        document.getElementById('celebratePct').textContent = pct + '%';
+        spawnConfetti();
+        document.getElementById('celebrateOverlay').classList.add('show');
+      }
+    }
 
-function spawnConfetti() {
-  const wrap = document.getElementById('confettiWrap');
-  wrap.innerHTML = '';
-  const colors = ['#7c5cfc','#38bdf8','#f59e0b','#f472b6','#2dd4a7','#fff'];
-  for (let i = 0; i < 55; i++) {
-    const p = document.createElement('div');
-    p.className = 'confetti-piece';
-    p.style.left = Math.random() * 100 + '%';
-    p.style.background = colors[Math.floor(Math.random() * colors.length)];
-    p.style.width  = (6 + Math.random() * 8) + 'px';
-    p.style.height = (6 + Math.random() * 8) + 'px';
-    p.style.animationDuration = (1.5 + Math.random() * 1.5) + 's';
-    p.style.animationDelay   = (Math.random() * 0.8) + 's';
-    p.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
-    wrap.appendChild(p);
-  }
-}
+    function spawnConfetti() {
+      const wrap = document.getElementById('confettiWrap');
+      wrap.innerHTML = '';
+      const colors = ['#7c5cfc', '#38bdf8', '#f59e0b', '#f472b6', '#2dd4a7', '#fff'];
+      for (let i = 0; i < 55; i++) {
+        const p = document.createElement('div');
+        p.className = 'confetti-piece';
+        p.style.left = Math.random() * 100 + '%';
+        p.style.background = colors[Math.floor(Math.random() * colors.length)];
+        p.style.width = (6 + Math.random() * 8) + 'px';
+        p.style.height = (6 + Math.random() * 8) + 'px';
+        p.style.animationDuration = (1.5 + Math.random() * 1.5) + 's';
+        p.style.animationDelay = (Math.random() * 0.8) + 's';
+        p.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+        wrap.appendChild(p);
+      }
+    }
 
-function closeCelebrate(e) {
-  if (e && e.target !== document.getElementById('celebrateOverlay')) return;
-  document.getElementById('celebrateOverlay').classList.remove('show');
-}
+    function closeCelebrate(e) {
+      if (e && e.target !== document.getElementById('celebrateOverlay')) return;
+      document.getElementById('celebrateOverlay').classList.remove('show');
+    }
 
-// ─────────────────────────────────────────────
-//  INIT
-// ─────────────────────────────────────────────
-renderDay();
-</script>
+    // ─────────────────────────────────────────────
+    //  INIT
+    // ─────────────────────────────────────────────
+    renderDay();
+  </script>
 </body>
+
 </html>
